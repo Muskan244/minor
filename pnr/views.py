@@ -24,7 +24,7 @@ class PNRList(generics.ListCreateAPIView):
                 "message": "PNR already checked."
             }, status=status.HTTP_200_OK)
 
-        # Validate the PNR with external API
+        # Validate the PNR 
         is_valid = check_pnr_status(pnr_number)
 
         # Create a new PNR entry with the validation result
@@ -33,7 +33,7 @@ class PNRList(generics.ListCreateAPIView):
         return Response({
             "pnr_number": new_pnr.pnr_number,
             "is_valid": new_pnr.is_valid,
-            "message": "PNR checked with external API and result saved."
+            "message": "PNR checked and result saved."
         }, status=status.HTTP_201_CREATED)
 
 
@@ -46,7 +46,6 @@ class PNRDelete(generics.RetrieveDestroyAPIView):
         # Retrieve and delete the PNR object
         pnr_instance = self.get_object()
         self.perform_destroy(pnr_instance)
-        return Response({"message": f"PNR {pnr_instance.pnr_number} deleted successfully."}, status=204)
-#class PNRListCreate(generics.ListCreateAPIView):
- #   queryset = PNR.objects.all()
-  #  serializer_class = PNRSerializer
+        return Response({
+            "message": f"PNR {pnr_instance.pnr_number} deleted successfully."
+        }, status=status.HTTP_204_NO_CONTENT)
