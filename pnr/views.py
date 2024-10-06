@@ -2,8 +2,10 @@ import requests
 from django.conf import settings
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .models import PNR
-from .serializers import PNRSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from .models import PNR, Parcel, TravelDetails, Message, Notification
+from .serializers import PNRSerializer, ParcelSerializer, TravelDetailsSerializer, MessageSerializer, NotificationSerializer
 from .services import check_pnr_status
 
 # Create your views here.
@@ -25,8 +27,12 @@ class PNRList(generics.ListCreateAPIView):
             }, status=status.HTTP_200_OK)
 
         # Validate the PNR 
-        is_valid = check_pnr_status(pnr_number)
-
+        valid = check_pnr_status(pnr_number)
+        if valid == None:
+            is_valid = False
+        else:
+            is_valid = True
+        
         # Create a new PNR entry with the validation result
         new_pnr = PNR.objects.create(pnr_number=pnr_number, is_valid=is_valid)
 
@@ -49,3 +55,4 @@ class PNRDelete(generics.RetrieveDestroyAPIView):
         return Response({
             "message": f"PNR {pnr_instance.pnr_number} deleted successfully."
         }, status=status.HTTP_204_NO_CONTENT)
+    
